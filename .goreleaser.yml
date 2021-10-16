@@ -1,0 +1,34 @@
+before:
+  hooks:
+    - go mod download
+builds:
+  - goos:
+      - darwin
+      - linux
+    goarch:
+      - amd64
+    ldflags:
+      - -w -s
+      - -X github.com/shusugmt/kubectl-seal/cmd.Version={{.Version}}
+      - -X github.com/shusugmt/kubectl-seal/cmd.Revision={{.FullCommit}}
+      - -X github.com/shusugmt/kubectl-seal/cmd.Branch={{.Branch}}
+      - -X github.com/shusugmt/kubectl-seal/cmd.BuildUser=goreleaser
+      - -X github.com/shusugmt/kubectl-seal/cmd.BuildDate={{.CommitDate}}
+      - -extldflags=-static
+archives:
+  - replacements:
+      darwin: Darwin
+      linux: Linux
+      windows: Windows
+      386: i386
+      amd64: x86_64
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ .Tag }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
