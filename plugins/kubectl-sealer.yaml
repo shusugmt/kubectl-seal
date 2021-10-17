@@ -1,0 +1,39 @@
+apiVersion: krew.googlecontainertools.github.com/v1alpha2
+kind: Plugin
+metadata:
+  name: sealer
+spec:
+  version: v0.0.1
+  homepage: https://github.com/shusugmt/kubectl-sealer
+  shortDescription: Make editing SealedSecret easier
+  description: |
+    Make editing SealedSecret easier.
+  platforms:
+  - selector:
+      matchLabels:
+        os: darwin
+        arch: amd64
+    uri: https://github.com/shusugmt/kubectl-sealer/releases/download/v0.0.1/kubectl-sealer_0.0.1_darwin_amd64.tar.gz
+    sha256: bea2dc58afb0a378477fa62d6002f1977edcd4a8e8ecfec06f2705184ed1fbe5
+    bin: kubectl-sealer
+  - selector:
+      matchLabels:
+        os: darwin
+        arch: arm64
+    uri: https://github.com/shusugmt/kubectl-sealer/releases/download/v0.0.1/kubectl-sealer_0.0.1_darwin_arm64.tar.gz
+    sha256: ad3a409913ad319799bb319fb8f46e9a62753c96938622da7924fc0b73b119a0
+    bin: kubectl-sealer
+  - selector:
+      matchLabels:
+        os: linux
+        arch: amd64
+    uri: https://github.com/shusugmt/kubectl-sealer/releases/download/v0.0.1/kubectl-sealer_0.0.1_linux_amd64.tar.gz
+    sha256: ebae59a12042d8bffd8db06aeee611d5cf26bacf1ff2d71b4a77a9c343b73a84
+    bin: kubectl-sealer
+  - selector:
+      matchLabels:
+        os: linux
+        arch: arm64
+    uri: https://github.com/shusugmt/kubectl-sealer/releases/download/v0.0.1/kubectl-sealer_0.0.1_linux_arm64.tar.gz
+    sha256: ed1e1b7fa216027aecf8897c6fcdc5650b5f2dc18ca7151f8a9f3d20061af65b
+    bin: kubectl-sealer
