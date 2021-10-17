@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/shusugmt/kubectl-seal/seal"
+	"github.com/shusugmt/kubectl-sealer/sealer"
 	"github.com/spf13/cobra"
 )
 
@@ -35,12 +35,12 @@ var editCmd = &cobra.Command{
 			log.Fatalf("%v", err)
 		}
 
-		srcSecretYAML, err := seal.Unseal(srcSealedSecretYAML, editCmdOpts.sealedSecretsControllerNamespace)
+		srcSecretYAML, err := sealer.Unseal(srcSealedSecretYAML, editCmdOpts.sealedSecretsControllerNamespace)
 		if err != nil {
 			log.Fatalf("%v", err)
 		}
 
-		editedSecretYAML, err := seal.EditWithEditor(srcSecretYAML)
+		editedSecretYAML, err := sealer.EditWithEditor(srcSecretYAML)
 		if err != nil {
 			log.Fatalf("%v", err)
 		}
@@ -49,7 +49,7 @@ var editCmd = &cobra.Command{
 			os.Exit(0)
 		}
 
-		updatedSealedSecretYAML, err := seal.Seal(editedSecretYAML, false)
+		updatedSealedSecretYAML, err := sealer.Seal(editedSecretYAML, false)
 		if err != nil {
 			log.Fatalf("%v", err)
 		}

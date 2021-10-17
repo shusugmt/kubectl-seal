@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/shusugmt/kubectl-seal/cmd"
+	"github.com/shusugmt/kubectl-sealer/cmd"
 )
 
 func main() {

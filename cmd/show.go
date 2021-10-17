@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 
-	"github.com/shusugmt/kubectl-seal/seal"
+	"github.com/shusugmt/kubectl-sealer/sealer"
 	"github.com/spf13/cobra"
 )
 
@@ -32,7 +32,7 @@ var showCmd = &cobra.Command{
 			log.Fatalf("%v", err)
 		}
 
-		s, err := seal.Unseal(sealedSecretYAML, showCmdOpts.sealedSecretsControllerNamespace)
+		s, err := sealer.Unseal(sealedSecretYAML, showCmdOpts.sealedSecretsControllerNamespace)
 		if err != nil {
 			log.Fatalf("%v", err)
 		}

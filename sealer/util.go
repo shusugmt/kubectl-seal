@@ -1,4 +1,4 @@
-package seal
+package sealer
 
 import (
 	"bytes"
@@ -24,7 +24,7 @@ func EditWithEditor(content []byte) (editedContent []byte, err error) {
 	editor := GetEnv("VISUAL", GetEnv("EDITOR", "vi"))
 
 	// create and open a temporary file for editing
-	f, err := os.CreateTemp("", "kubectl-seal-")
+	f, err := os.CreateTemp("", "kubectl-sealer-")
 	if err != nil {
 		return nil, fmt.Errorf("error creating temporary file: %v", err)
 	}

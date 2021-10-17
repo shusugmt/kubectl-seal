@@ -1,4 +1,4 @@
-package seal
+package sealer
 
 import (
 	"encoding/json"
@@ -13,7 +13,7 @@ import (
 
 func Unseal(sealedSecretYAML []byte, sealedSecretsControllerNamespace string) (secretYAML []byte, err error) {
 	// create and open a temporary file
-	f, err := os.CreateTemp("", "kubectl-seal-")
+	f, err := os.CreateTemp("", "kubectl-sealer-")
 	if err != nil {
 		return nil, fmt.Errorf("error creating temporary file: %v", err)
 	}

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/shusugmt/kubectl-seal/seal"
+	"github.com/shusugmt/kubectl-sealer/sealer"
 	"github.com/spf13/cobra"
 )
 
@@ -23,13 +23,13 @@ func addFlagFilename(cmd *cobra.Command, storeTo *string) {
 
 func setSealedSecretsControllerNamespace(storeTo *string) {
 	// default to kube-system, consistent with kubeseal
-	*storeTo = seal.GetEnv("SEALED_SECRETS_CONTROLLER_NAMESPACE", "kube-system")
+	*storeTo = sealer.GetEnv("SEALED_SECRETS_CONTROLLER_NAMESPACE", "kube-system")
 }
 
 var rootCmd = &cobra.Command{
-	Use:   "kubectl-seal",
-	Short: "kubectl-seal",
-	Long:  `kubectl-seal`,
+	Use:   "kubectl-sealer",
+	Short: "kubectl-sealer",
+	Long:  `kubectl-sealer`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("hello")
 	},

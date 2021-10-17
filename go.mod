@@ -1,4 +1,4 @@
-module github.com/shusugmt/kubectl-seal
+module github.com/shusugmt/kubectl-sealer
 
 go 1.17
 

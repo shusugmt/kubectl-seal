@@ -9,11 +9,11 @@ builds:
       - amd64
     ldflags:
       - -w -s
-      - -X github.com/shusugmt/kubectl-seal/cmd.Version={{.Version}}
-      - -X github.com/shusugmt/kubectl-seal/cmd.Revision={{.FullCommit}}
-      - -X github.com/shusugmt/kubectl-seal/cmd.Branch={{.Branch}}
-      - -X github.com/shusugmt/kubectl-seal/cmd.BuildUser=goreleaser
-      - -X github.com/shusugmt/kubectl-seal/cmd.BuildDate={{.CommitDate}}
+      - -X github.com/shusugmt/kubectl-sealer/cmd.Version={{.Version}}
+      - -X github.com/shusugmt/kubectl-sealer/cmd.Revision={{.FullCommit}}
+      - -X github.com/shusugmt/kubectl-sealer/cmd.Branch={{.Branch}}
+      - -X github.com/shusugmt/kubectl-sealer/cmd.BuildUser=goreleaser
+      - -X github.com/shusugmt/kubectl-sealer/cmd.BuildDate={{.CommitDate}}
       - -extldflags=-static
 archives:
   - replacements:

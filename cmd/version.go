@@ -24,7 +24,7 @@ var versionCmd = &cobra.Command{
 	Short: "Print version",
 	Long:  `Print version`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println(Print("kubectl-seal"))
+		fmt.Println(Print("kubectl-sealer"))
 	},
 }
 

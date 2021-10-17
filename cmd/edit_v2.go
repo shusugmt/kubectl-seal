@@ -7,7 +7,7 @@ import (
 	"os"
 
 	ssv1alpha1 "github.com/bitnami-labs/sealed-secrets/pkg/apis/sealed-secrets/v1alpha1"
-	"github.com/shusugmt/kubectl-seal/seal"
+	"github.com/shusugmt/kubectl-sealer/sealer"
 	"github.com/spf13/cobra"
 	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/yaml"
@@ -38,12 +38,12 @@ var editv2Cmd = &cobra.Command{
 			log.Fatalf("%v", err)
 		}
 
-		srcSecretYAML, err := seal.Unseal(srcSealedSecretYAML, editv2CmdOpts.sealedSecretsControllerNamespace)
+		srcSecretYAML, err := sealer.Unseal(srcSealedSecretYAML, editv2CmdOpts.sealedSecretsControllerNamespace)
 		if err != nil {
 			log.Fatalf("%v", err)
 		}
 
-		editedSecretYAML, err := seal.EditWithEditor(srcSecretYAML)
+		editedSecretYAML, err := sealer.EditWithEditor(srcSecretYAML)
 
 		if err != nil {
 			log.Fatalf("%v", err)
@@ -103,7 +103,7 @@ func updateSealedSecret(sealedSecretYAML []byte, secretYAML []byte, editedSecret
 	// if scope chas been hanged
 	if ssv1alpha1.SecretScope(&editedSecret) != ssv1alpha1.SecretScope(&secret) {
 		// then need to re-seal entire Secret
-		return seal.Seal(editedSecretYAML, false)
+		return sealer.Seal(editedSecretYAML, false)
 	}
 
 	// ---- ---- ---- ---- ----
@@ -114,7 +114,7 @@ func updateSealedSecret(sealedSecretYAML []byte, secretYAML []byte, editedSecret
 		// and either namespace or name has been changed
 		if secret.Namespace != editedSecret.Namespace || secret.Name != editedSecret.Name {
 			// then need to re-seal entire Secret
-			return seal.Seal(editedSecretYAML, false)
+			return sealer.Seal(editedSecretYAML, false)
 		}
 	}
 	// if scope is namespace-wide
@@ -122,7 +122,7 @@ func updateSealedSecret(sealedSecretYAML []byte, secretYAML []byte, editedSecret
 		// and namespace has been changed
 		if secret.Namespace != editedSecret.Namespace {
 			// then need to re-seal entire Secret
-			return seal.Seal(editedSecretYAML, false)
+			return sealer.Seal(editedSecretYAML, false)
 		}
 	}
 
@@ -143,7 +143,7 @@ func updateSealedSecret(sealedSecretYAML []byte, secretYAML []byte, editedSecret
 	}
 	// generate skeleton SealedSecret from edited Secret
 	// ensuring all metadata is updated
-	newSealedSecretYAML, err := seal.Seal(editedSecretCopyYAML, true)
+	newSealedSecretYAML, err := sealer.Seal(editedSecretCopyYAML, true)
 	if err != nil {
 		return nil, err
 	}
@@ -162,11 +162,11 @@ func updateSealedSecret(sealedSecretYAML []byte, secretYAML []byte, editedSecret
 
 	// step.4-1
 	// add kv pairs those are entirely new
-	addedKeys := seal.GetKeyDiff(editedSecret.StringData, secret.StringData)
+	addedKeys := sealer.GetKeyDiff(editedSecret.StringData, secret.StringData)
 	for _, addedKey := range addedKeys {
 		// get raw encrypted value
 		value := []byte(editedSecret.StringData[addedKey])
-		encryptedValue, err := seal.EncryptRaw(value, editedSecret)
+		encryptedValue, err := sealer.EncryptRaw(value, editedSecret)
 		if err != nil {
 			return nil, err
 		}
@@ -175,11 +175,11 @@ func updateSealedSecret(sealedSecretYAML []byte, secretYAML []byte, editedSecret
 
 	// step.4-2
 	// update kv pairs those values are changed
-	updatedKeyVals := seal.GetUpdatedExisting(editedSecret.StringData, secret.StringData)
+	updatedKeyVals := sealer.GetUpdatedExisting(editedSecret.StringData, secret.StringData)
 	for k, v := range updatedKeyVals {
 		// get raw encrypted value
 		value := []byte(v)
-		encryptedValue, err := seal.EncryptRaw(value, editedSecret)
+		encryptedValue, err := sealer.EncryptRaw(value, editedSecret)
 		if err != nil {
 			return nil, err
 		}
@@ -188,7 +188,7 @@ func updateSealedSecret(sealedSecretYAML []byte, secretYAML []byte, editedSecret
 
 	// step.4-3
 	// delete kv pairs those are removed
-	deletedKeys := seal.GetKeyDiff(secret.StringData, editedSecret.StringData)
+	deletedKeys := sealer.GetKeyDiff(secret.StringData, editedSecret.StringData)
 	for _, deletedKey := range deletedKeys {
 		delete(newSealedSecret.Spec.EncryptedData, deletedKey)
 	}
