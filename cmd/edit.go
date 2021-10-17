@@ -35,7 +35,7 @@ var editCmd = &cobra.Command{
 			log.Fatalf("%v", err)
 		}
 
-		srcSecretYAML, err := seal.Unseal(srcSealedSecretYAML, "sealed-secrets")
+		srcSecretYAML, err := seal.Unseal(srcSealedSecretYAML, editCmdOpts.sealedSecretsControllerNamespace)
 		if err != nil {
 			log.Fatalf("%v", err)
 		}
