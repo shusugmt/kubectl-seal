@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 
@@ -30,7 +29,7 @@ var editCmd = &cobra.Command{
 	Long:  `edit`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		srcSealedSecretYAML, err := ioutil.ReadFile(editCmdOpts.filename)
+		srcSealedSecretYAML, err := os.ReadFile(editCmdOpts.filename)
 		if err != nil {
 			log.Fatalf("%v", err)
 		}

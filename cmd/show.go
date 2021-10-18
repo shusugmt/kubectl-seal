@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
 
 	"github.com/shusugmt/kubectl-sealer/sealer"
 	"github.com/spf13/cobra"
@@ -27,7 +27,7 @@ var showCmd = &cobra.Command{
 	Long:  `Decrypt given SealedSecret and print in Secret resource format`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		sealedSecretYAML, err := ioutil.ReadFile(showCmdOpts.filename)
+		sealedSecretYAML, err := os.ReadFile(showCmdOpts.filename)
 		if err != nil {
 			log.Fatalf("%v", err)
 		}
