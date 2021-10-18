@@ -31,7 +31,7 @@ var rootCmd = &cobra.Command{
 	Short: "kubectl-sealer",
 	Long:  `kubectl-sealer`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("hello")
+		cmd.Help()
 	},
 }
 
