@@ -25,14 +25,14 @@ var editCmdOpts = &editCmdOptions{}
 func init() {
 	addFlagFilename(editCmd, &editCmdOpts.filename)
 	setSealedSecretsControllerNamespace(&editCmdOpts.sealedSecretsControllerNamespace)
-	editCmd.Flags().BoolVarP(&editCmdOpts.inPlace, "in-place", "i", false, "enable in-place edit")
+	editCmd.Flags().BoolVarP(&editCmdOpts.inPlace, "in-place", "i", false, "enable in-place edit; overwrite the input SealedSecret file with updated content")
 	editCmd.Flags().BoolVar(&editCmdOpts.forceUpdate, "force-update", false, "disable partial update mode; it will re-encrypt all values even if it's not modified")
 }
 
 var editCmd = &cobra.Command{
 	Use:   "edit",
-	Short: "edit",
-	Long:  `edit`,
+	Short: "edit SealedSecret in plain Secret format and re-encrypt afterwards",
+	Long:  `Edit SealedSecret in plain Secret format and re-encrypt afterwards.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		srcSealedSecretYAML, err := os.ReadFile(editCmdOpts.filename)
