@@ -50,6 +50,6 @@ jobs:
         set -x
         set -euo pipefail
         export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
-        find plugins/ |
+        find plugins/ -type f |
           tee /dev/stderr |
           xargs -I _ $HOME/bin/validate-krew-manifest -manifest _
