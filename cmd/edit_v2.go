@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"os"
@@ -16,6 +17,7 @@ type editv2CmdOptions struct {
 	filename                         string
 	sealedSecretsControllerNamespace string
 	inPlace                          bool
+	forceUpdate                      bool
 }
 
 var editv2CmdOpts = &editv2CmdOptions{}
@@ -24,6 +26,7 @@ func init() {
 	addFlagFilename(editv2Cmd, &editv2CmdOpts.filename)
 	setSealedSecretsControllerNamespace(&editv2CmdOpts.sealedSecretsControllerNamespace)
 	editv2Cmd.Flags().BoolVarP(&editv2CmdOpts.inPlace, "in-place", "i", false, "enable in-place edit")
+	editv2Cmd.Flags().BoolVar(&editv2CmdOpts.forceUpdate, "forceUpdate", false, "disable partial update mode; it will re-encrypt all values even if it's not modified")
 }
 
 var editv2Cmd = &cobra.Command{
@@ -43,28 +46,43 @@ var editv2Cmd = &cobra.Command{
 		}
 
 		editedSecretYAML, err := sealer.EditWithEditor(srcSecretYAML)
-
 		if err != nil {
 			log.Fatalf("%v", err)
 		}
-		if editedSecretYAML == nil {
-			fmt.Println("no change")
-			os.Exit(0)
-		}
 
-		updatedSealedSecretYAML, err := updateSealedSecret(srcSealedSecretYAML, srcSecretYAML, editedSecretYAML)
-		if err != nil {
-			log.Fatalf("%v", err)
+		var updatedSealedSecretYAML []byte
+		if editv2CmdOpts.forceUpdate {
+			updatedSealedSecretYAML, err = sealer.Seal(editedSecretYAML, false)
+			if err != nil {
+				log.Fatalf("%v", err)
+			}
+		} else {
+			// check whether the content is modified or not
+			if bytes.Equal(editedSecretYAML, srcSecretYAML) {
+				// if it's same, do nothing
+				fmt.Println("no change")
+				os.Exit(0)
+			}
+
+			updatedSealedSecretYAML, err = updateSealedSecret(srcSealedSecretYAML, srcSecretYAML, editedSecretYAML)
+			if err != nil {
+				log.Fatalf("%v", err)
+			}
 		}
 
 		if editv2CmdOpts.inPlace {
-			outFile, err := os.Create(editv2CmdOpts.filename)
+			f, err := os.Create(editv2CmdOpts.filename)
 			if err != nil {
-				log.Fatalf("failed opening file to overwrite with updated SealedSecret: %s: %v", outFile.Name(), err)
+				log.Fatalf("failed opening file to overwrite with updated SealedSecret: %s: %v", f.Name(), err)
 			}
-			_, err = outFile.Write(updatedSealedSecretYAML)
+			_, err = f.Write(updatedSealedSecretYAML)
 			if err != nil {
-				log.Fatalf("failed writing updated SealedSecret: %s: %v", outFile.Name(), err)
+				f.Close()
+				log.Fatalf("failed writing updated SealedSecret: %s: %v", f.Name(), err)
+			}
+			err = f.Close()
+			if err != nil {
+				log.Fatalf("failed writing updated SealedSecret: %s: %v", f.Name(), err)
 			}
 		} else {
 			fmt.Print(string(updatedSealedSecretYAML))

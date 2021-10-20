@@ -1,7 +1,6 @@
 package sealer
 
 import (
-	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -17,7 +16,6 @@ func GetEnv(key string, fallback string) string {
 
 // take content, open editor, then return edited content
 // a.k.a. vipe
-// returns nil if content is same(not changed) after editing
 func EditWithEditor(content []byte) (editedContent []byte, err error) {
 
 	// set editor
@@ -48,11 +46,6 @@ func EditWithEditor(content []byte) (editedContent []byte, err error) {
 	editedContent, err = os.ReadFile(f.Name())
 	if err != nil {
 		return nil, fmt.Errorf("error: %v", err)
-	}
-
-	// return nil if content is identical before and after
-	if bytes.Equal(content, editedContent) {
-		return nil, nil
 	}
 
 	return editedContent, nil
