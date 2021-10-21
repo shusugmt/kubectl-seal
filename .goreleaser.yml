@@ -2,7 +2,10 @@ before:
   hooks:
     - go mod download
 builds:
-  - goos:
+  - id: kubectl-sealer
+    env:
+      - CGO_ENABLED=0
+    goos:
       - darwin
       - linux
     goarch:
@@ -16,8 +19,15 @@ builds:
       - -X github.com/shusugmt/kubectl-sealer/cmd.BuildUser=goreleaser
       - -X github.com/shusugmt/kubectl-sealer/cmd.BuildDate={{.CommitDate}}
       - -extldflags=-static
+archives:
+  - id: kubectl-sealer
+    builds:
+      - kubectl-sealer
+    name_template: "{{ .ProjectName }}_{{ .Tag }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+    files:
+      - LICENSE
 checksum:
-  name_template: 'checksums.txt'
+  name_template: '{{ .ProjectName }}_{{ .Tag }}_checksums.txt'
 snapshot:
   name_template: "{{ .Tag }}-next"
 changelog:
