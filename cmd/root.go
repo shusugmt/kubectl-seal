@@ -39,4 +39,5 @@ func init() {
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(showCmd)
 	rootCmd.AddCommand(editCmd)
+	rootCmd.AddCommand(genkeyCmd)
 }
