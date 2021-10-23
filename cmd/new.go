@@ -45,7 +45,7 @@ var newCmd = &cobra.Command{
 			log.Fatalf("%v", err)
 		}
 
-		editedSecretYAML, err := sealer.EditWithEditor(emptySecretYAML)
+		editedSecretYAML, err := sealer.EditSecretUntilOK(emptySecretYAML)
 		if err != nil {
 			log.Fatalf("%v", err)
 		}
