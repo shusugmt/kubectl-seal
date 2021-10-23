@@ -6,6 +6,7 @@ require (
 	github.com/bitnami-labs/sealed-secrets v0.16.0
 	github.com/spf13/cobra v1.2.1
 	k8s.io/api v0.22.2
+	k8s.io/apimachinery v0.22.2
 	k8s.io/client-go v0.22.2
 	sigs.k8s.io/yaml v1.3.0
 )
@@ -27,7 +28,6 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	k8s.io/apimachinery v0.22.2 // indirect
 	k8s.io/klog/v2 v2.20.0 // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.1.2 // indirect
 )

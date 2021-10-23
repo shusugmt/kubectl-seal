@@ -17,7 +17,7 @@ type showCmdOptions struct {
 var showCmdOpts = &showCmdOptions{}
 
 func init() {
-	addFlagFilename(showCmd, &showCmdOpts.filename)
+	addFlagFilename(showCmd, &showCmdOpts.filename, true)
 	setSealedSecretsControllerNamespace(&showCmdOpts.sealedSecretsControllerNamespace)
 }
 

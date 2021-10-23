@@ -15,10 +15,12 @@ func Execute() {
 	}
 }
 
-func addFlagFilename(cmd *cobra.Command, storeTo *string) {
+func addFlagFilename(cmd *cobra.Command, storeTo *string, required bool) {
 	cmd.Flags().StringVarP(storeTo, "filename", "f", "", "path to SealedSecret resource")
 	cmd.MarkFlagFilename("filename")
-	cmd.MarkFlagRequired("filename")
+	if required {
+		cmd.MarkFlagRequired("filename")
+	}
 }
 
 func setSealedSecretsControllerNamespace(storeTo *string) {
@@ -39,5 +41,6 @@ func init() {
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(showCmd)
 	rootCmd.AddCommand(editCmd)
+	rootCmd.AddCommand(newCmd)
 	rootCmd.AddCommand(genkeyCmd)
 }

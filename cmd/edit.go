@@ -23,7 +23,7 @@ type editCmdOptions struct {
 var editCmdOpts = &editCmdOptions{}
 
 func init() {
-	addFlagFilename(editCmd, &editCmdOpts.filename)
+	addFlagFilename(editCmd, &editCmdOpts.filename, true)
 	setSealedSecretsControllerNamespace(&editCmdOpts.sealedSecretsControllerNamespace)
 	editCmd.Flags().BoolVarP(&editCmdOpts.inPlace, "in-place", "i", false, "enable in-place edit; overwrite the input SealedSecret file with updated content")
 	editCmd.Flags().BoolVar(&editCmdOpts.forceUpdate, "force-update", false, "disable partial update mode; it will re-encrypt all values even if it's not modified")
