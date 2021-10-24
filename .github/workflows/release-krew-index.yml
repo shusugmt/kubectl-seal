@@ -1,33 +1,37 @@
-name: update-krew-index
+name: release-krew-index
 
 on:
-  workflow_run:
-    workflows:
-      - goreleaser
+  release:
     types:
-      - completed
+      - published
 
 jobs:
-  update-krew-index:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+  update-manifest:
     runs-on: ubuntu-latest
     steps:
+      - name: Generate token
+        id: generate_token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.TOKENAPP_APP_ID }}
+          private_key: ${{ secrets.TOKENAPP_PRIVATE_KEY }}
       - name: Checkout
         uses: actions/checkout@v2
         with:
           ref: krew-index
+          token: ${{ steps.generate_token.outputs.token }}
       - name: Install yq
         run: |
           export YQ_VERSION=v4.13.5
           wget https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64 -O /usr/bin/yq
           chmod +x /usr/bin/yq
-      - name: Update krew plugin manifest
+      - name: Run update-manifest.sh
         run: |
-          ./update-manifest.sh ${{ github.event.workflow_run.head_branch }}
-      - name: Release
+          ./update-manifest.sh ${GITHUB_REF}
+      - name: Commit and Push
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add plugins/sealer.yaml
-          git commit -m "Release kubectl-sealer ${{ github.event.workflow_run.head_branch }}"
+          git commit -m "Release kubectl-sealer ${GITHUB_REF}"
           git push
