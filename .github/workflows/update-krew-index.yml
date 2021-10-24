@@ -1,21 +1,24 @@
 name: update-krew-index
 
 on:
-  release:
+  workflow_run:
+    workflows:
+      - goreleaser
     types:
-      - published
+      - completed
 
 jobs:
   update-krew-index:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          refs: krew-index
+          ref: krew-index
       - name: Install yq
         run: |
-          export YQ_VERSION=v4.3.15
+          export YQ_VERSION=v4.13.5
           wget https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64 -O /usr/bin/yq
           chmod +x /usr/bin/yq
       - name: Update krew plugin manifest
