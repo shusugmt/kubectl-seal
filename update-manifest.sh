@@ -4,8 +4,12 @@ set -eu
 # matches to git tags, e.g. "v0.0.3"
 VER="$1"
 
+echo "Updating kubectl-sealer plugin manifest to ${VER} ..."
+
+VER=$VER yq e '.spec.version |= env(VER)' plugins/sealer.yaml -i
+
 # ex.) https://github.com/shusugmt/kubectl-sealer/releases/download/v0.0.3/kubectl-sealer_v0.0.3_checksums.txt
-TARGETS="$(curl -L https://github.com/shusugmt/kubectl-sealer/releases/download/${VER}/kubectl-sealer_${VER}_checksums.txt)"
+TARGETS="$(curl -sSL https://github.com/shusugmt/kubectl-sealer/releases/download/${VER}/kubectl-sealer_${VER}_checksums.txt)"
 
 IFS=$'\n'
 for TARGET in $TARGETS; do
@@ -21,3 +25,5 @@ for TARGET in $TARGETS; do
     OS=$OS ARCH=$ARCH SHA=$SHA yq e '(.spec.platforms[] | select(.selector.matchLabels.os == env(OS)) | select(.selector.matchLabels.arch == env(ARCH))) |= .sha256 = env(SHA)' plugins/sealer.yaml -i
   fi
 done
+
+echo "Done!!"
