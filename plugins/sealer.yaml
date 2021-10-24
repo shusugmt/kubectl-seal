@@ -9,31 +9,31 @@ spec:
   description: |
     Make editing SealedSecret easier.
   platforms:
-  - selector:
-      matchLabels:
-        os: darwin
-        arch: amd64
-    uri: https://github.com/shusugmt/kubectl-sealer/releases/download/v0.0.3-alpha/kubectl-sealer_v0.0.3-alpha_darwin_amd64.tar.gz
-    sha256: 9db005dd057d0cb185b202e4647135fd3bc1afc2db40cddfb0c7c94b5b9af41b
-    bin: kubectl-sealer
-  - selector:
-      matchLabels:
-        os: darwin
-        arch: arm64
-    uri: https://github.com/shusugmt/kubectl-sealer/releases/download/v0.0.3-alpha/kubectl-sealer_v0.0.3-alpha_darwin_arm64.tar.gz
-    sha256: 9a09a32aeee790a0c68012bbc4189303cde2ec12e515d0abe3aa106cbb85f91b
-    bin: kubectl-sealer
-  - selector:
-      matchLabels:
-        os: linux
-        arch: amd64
-    uri: https://github.com/shusugmt/kubectl-sealer/releases/download/v0.0.3-alpha/kubectl-sealer_v0.0.3-alpha_linux_amd64.tar.gz
-    sha256: b60ba68d6ab4280c58f64a4c8b41ad450d7d2e10cf05c695aaf8cbd1d57a6746
-    bin: kubectl-sealer
-  - selector:
-      matchLabels:
-        os: linux
-        arch: arm64
-    uri: https://github.com/shusugmt/kubectl-sealer/releases/download/v0.0.3-alpha/kubectl-sealer_v0.0.3-alpha_linux_arm64.tar.gz
-    sha256: d2feab7be74fcf332ef077b4e50d954039cc813dd47c56ccae4b2fbcbb85c1e0
-    bin: kubectl-sealer
+    - selector:
+        matchLabels:
+          os: darwin
+          arch: amd64
+      uri: https://github.com/shusugmt/kubectl-sealer/releases/download/v0.0.3-alpha/kubectl-sealer_v0.0.3-alpha_darwin_amd64.tar.gz
+      sha256: 9db005dd057d0cb185b202e4647135fd3bc1afc2db40cddfb0c7c94b5b9af41b
+      bin: kubectl-sealer
+    - selector:
+        matchLabels:
+          os: darwin
+          arch: arm64
+      uri: https://github.com/shusugmt/kubectl-sealer/releases/download/v0.0.3-alpha/kubectl-sealer_v0.0.3-alpha_darwin_arm64.tar.gz
+      sha256: 9a09a32aeee790a0c68012bbc4189303cde2ec12e515d0abe3aa106cbb85f91b
+      bin: kubectl-sealer
+    - selector:
+        matchLabels:
+          os: linux
+          arch: amd64
+      uri: https://github.com/shusugmt/kubectl-sealer/releases/download/v0.0.3-alpha/kubectl-sealer_v0.0.3-alpha_linux_amd64.tar.gz
+      sha256: b60ba68d6ab4280c58f64a4c8b41ad450d7d2e10cf05c695aaf8cbd1d57a6746
+      bin: kubectl-sealer
+    - selector:
+        matchLabels:
+          os: linux
+          arch: arm64
+      uri: https://github.com/shusugmt/kubectl-sealer/releases/download/v0.0.3-alpha/kubectl-sealer_v0.0.3-alpha_linux_arm64.tar.gz
+      sha256: d2feab7be74fcf332ef077b4e50d954039cc813dd47c56ccae4b2fbcbb85c1e0
+      bin: kubectl-sealer
