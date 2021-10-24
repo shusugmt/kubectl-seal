@@ -1,0 +1,30 @@
+name: update-krew-index
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  update-krew-index:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          refs: krew-index
+      - name: Install yq
+        run: |
+          export YQ_VERSION=v4.3.15
+          wget https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64 -O /usr/bin/yq
+          chmod +x /usr/bin/yq
+      - name: Update krew plugin manifest
+        run: |
+          update-manifest.sh ${GITHUB_REF}
+      - name: Release
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add plugins/sealer.yaml
+          git commit -m "Release kubectl-sealer ${GITHUB_REF}"
+          git push
