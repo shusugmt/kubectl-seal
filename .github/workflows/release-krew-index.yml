@@ -27,11 +27,11 @@ jobs:
           chmod +x /usr/bin/yq
       - name: Run update-manifest.sh
         run: |
-          ./update-manifest.sh ${GITHUB_REF}
+          ./update-manifest.sh ${{ github.event.release.tag_name }}
       - name: Commit and Push
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add plugins/sealer.yaml
-          git commit -m "Release kubectl-sealer ${GITHUB_REF}"
+          git commit -m "Release kubectl-sealer ${{ github.event.release.tag_name }}"
           git push
