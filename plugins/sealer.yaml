@@ -13,27 +13,27 @@ spec:
         matchLabels:
           os: darwin
           arch: amd64
-      uri: https://github.com/shusugmt/kubectl-sealer/releases/download/v0.0.3-alpha/kubectl-sealer_v0.0.3-alpha_darwin_amd64.tar.gz
-      sha256: 9db005dd057d0cb185b202e4647135fd3bc1afc2db40cddfb0c7c94b5b9af41b
+      uri: https://github.com/shusugmt/kubectl-sealer/releases/download/v0.0.3/kubectl-sealer_v0.0.3_darwin_amd64.tar.gz
+      sha256: 74a9748304180789b240b950ba5376bf4ee3b345c99bdbde21b50e401dfc293a
       bin: kubectl-sealer
     - selector:
         matchLabels:
           os: darwin
           arch: arm64
-      uri: https://github.com/shusugmt/kubectl-sealer/releases/download/v0.0.3-alpha/kubectl-sealer_v0.0.3-alpha_darwin_arm64.tar.gz
-      sha256: 9a09a32aeee790a0c68012bbc4189303cde2ec12e515d0abe3aa106cbb85f91b
+      uri: https://github.com/shusugmt/kubectl-sealer/releases/download/v0.0.3/kubectl-sealer_v0.0.3_darwin_arm64.tar.gz
+      sha256: 5a61ddcb47a55e6b946a3ce755ab85808ce4eecc2493e816037d65aaf54ae5c4
       bin: kubectl-sealer
     - selector:
         matchLabels:
           os: linux
           arch: amd64
-      uri: https://github.com/shusugmt/kubectl-sealer/releases/download/v0.0.3-alpha/kubectl-sealer_v0.0.3-alpha_linux_amd64.tar.gz
-      sha256: b60ba68d6ab4280c58f64a4c8b41ad450d7d2e10cf05c695aaf8cbd1d57a6746
+      uri: https://github.com/shusugmt/kubectl-sealer/releases/download/v0.0.3/kubectl-sealer_v0.0.3_linux_amd64.tar.gz
+      sha256: 8f7df3bf665c615a3b2f9032726b23ee637a4507f4b6afb864dae76ef6f39b36
       bin: kubectl-sealer
     - selector:
         matchLabels:
           os: linux
           arch: arm64
-      uri: https://github.com/shusugmt/kubectl-sealer/releases/download/v0.0.3-alpha/kubectl-sealer_v0.0.3-alpha_linux_arm64.tar.gz
-      sha256: d2feab7be74fcf332ef077b4e50d954039cc813dd47c56ccae4b2fbcbb85c1e0
+      uri: https://github.com/shusugmt/kubectl-sealer/releases/download/v0.0.3/kubectl-sealer_v0.0.3_linux_arm64.tar.gz
+      sha256: 50636519e0e2bcfa836478388561a8b8b4c9ef0a1c6c0bd2926f189a3ef3408f
       bin: kubectl-sealer
