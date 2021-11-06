@@ -1,6 +1,7 @@
 package extcmd
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"os/exec"
 	"testing"
@@ -13,6 +14,53 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	fexec "k8s.io/utils/exec/testing"
 )
+
+func TestUnsealSuccess(t *testing.T) {
+	_ = assert.New(t)
+	c := gomock.NewController(t)
+	defer c.Finish()
+
+	fakeCmd := &fexec.FakeCmd{
+		CombinedOutputScript: []fexec.FakeAction{
+			func() ([]byte, []byte, error) {
+				return []byte(`{"kind":"Secret","apiVersion":"v1","metadata":{"name":"apple"}}`), []byte(""), nil
+			},
+		},
+	}
+	args := []interface{}{"--recovery-unseal", "--recovery-private-key", gomock.Any()}
+
+	mockExec := mock.NewMockInterface(c)
+	mockExec.
+		EXPECT().
+		Command("kubeseal", args...).
+		Return(fakeCmd)
+
+	ks := kubeseal{exec: mockExec}
+	sealedSecret := &ssv1alpha1.SealedSecret{}
+	sealingKeys := &corev1.SecretList{}
+	output, err := ks.Unseal(sealedSecret, sealingKeys)
+	if err != nil {
+		t.Errorf("test run failed: %v", err)
+	}
+	expectedOutput := &corev1.Secret{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "v1",
+			Kind:       "Secret",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "apple",
+		},
+		StringData: map[string]string{},
+	}
+	assert.Equal(t, expectedOutput, output)
+
+	stdin, err := ioutil.ReadAll(fakeCmd.Stdin)
+	if err != nil {
+		t.Errorf("test run failed: %v", err)
+	}
+	expectedStdin, _ := json.Marshal(sealedSecret)
+	assert.Equal(t, expectedStdin, stdin)
+}
 
 func TestEncryptRawSuccess(t *testing.T) {
 	_ = assert.New(t)

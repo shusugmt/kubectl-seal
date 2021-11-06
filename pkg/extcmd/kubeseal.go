@@ -4,7 +4,9 @@ package extcmd
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"os"
 
 	ssv1alpha1 "github.com/bitnami-labs/sealed-secrets/pkg/apis/sealed-secrets/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
@@ -19,8 +21,8 @@ func GetKubeseal() Kubeseal {
 }
 
 type Kubeseal interface {
-	Seal(secret *corev1.Secret) (*ssv1alpha1.SealedSecret, error)
-	Unseal(secret *corev1.SecretList) (*corev1.Secret, error)
+	Seal(*corev1.Secret) (*ssv1alpha1.SealedSecret, error)
+	Unseal(*ssv1alpha1.SealedSecret, *corev1.SecretList) (*corev1.Secret, error)
 	EncryptRaw([]byte, *corev1.Secret) ([]byte, error)
 }
 
@@ -32,8 +34,65 @@ func (ks *kubeseal) Seal(secret *corev1.Secret) (*ssv1alpha1.SealedSecret, error
 	return nil, nil
 }
 
-func (ks *kubeseal) Unseal(sealingKeys *corev1.SecretList) (*corev1.Secret, error) {
-	return nil, nil
+func (ks *kubeseal) Unseal(sealedSecret *ssv1alpha1.SealedSecret, sealingKeys *corev1.SecretList) (*corev1.Secret, error) {
+	// create temporary file to store sealing keys
+	// TODO: parmeterize file name prefix
+	f, err := os.CreateTemp("", "kubectl-sealer-")
+	if err != nil {
+		return nil, fmt.Errorf("error creating temporary file: %v", err)
+	}
+	defer os.Remove(f.Name())
+
+	sealingKeysJSON, err := json.Marshal(sealingKeys)
+	if err != nil {
+		return nil, fmt.Errorf("error marshalling kubernetes SecretList to json: %v", err)
+	}
+	_, err = f.Write(sealingKeysJSON)
+	if err != nil {
+		return nil, fmt.Errorf("error writing SecretList to file: %v: %v", f, err)
+	}
+	err = f.Close()
+	if err != nil {
+		return nil, fmt.Errorf("error closing file: %v: %v", f, err)
+	}
+
+	// do unseal
+	args := []string{
+		"--recovery-unseal",
+		"--recovery-private-key", f.Name(),
+	}
+	execCmd := ks.exec.Command("kubeseal", args...)
+
+	sealedSecretJSON, err := json.Marshal(sealedSecret)
+	if err != nil {
+		return nil, fmt.Errorf("error marshalling SealedSecret to json: %v", err)
+	}
+	execCmd.SetStdin(bytes.NewReader(sealedSecretJSON))
+
+	secretJSON, err := execCmd.CombinedOutput()
+	if err != nil {
+		return nil, fmt.Errorf("error invoking kubeseal as %v: %v: %s", args, err, secretJSON)
+	}
+
+	// build struct
+	var secret corev1.Secret
+	if err := json.Unmarshal(secretJSON, &secret); err != nil {
+		return nil, fmt.Errorf("error unmarshalling json to kubernetes Secret: %v", err)
+	}
+
+	// convert .data to .StringData with base64 decoding values
+	secret.StringData = map[string]string{}
+	for k, v := range secret.Data {
+		secret.StringData[k] = string(v)
+	}
+	// we don't need this anymore
+	secret.Data = nil
+
+	// delete metadata.ownerReference
+	secret.ObjectMeta.OwnerReferences = nil
+
+	return &secret, nil
+
 }
 
 func (ks *kubeseal) EncryptRaw(value []byte, secret *corev1.Secret) ([]byte, error) {
