@@ -2,6 +2,7 @@ package extcmd
 
 import (
 	"io/ioutil"
+	"os/exec"
 	"testing"
 
 	ssv1alpha1 "github.com/bitnami-labs/sealed-secrets/pkg/apis/sealed-secrets/v1alpha1"
@@ -107,6 +108,121 @@ func TestEncryptRawSuccess(t *testing.T) {
 				t.Errorf("test run failed: %v", err)
 			}
 			assert.Equal(t, td.value, stdin)
+		})
+	}
+}
+
+func TestEncryptRawFail(t *testing.T) {
+	_ = assert.New(t)
+	for _, td := range []struct {
+		subject      string
+		secret       *corev1.Secret
+		expectedArgs []string
+		err          string
+	}{
+		{
+			subject: "kubeseal returned error",
+			secret: &corev1.Secret{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "apple",
+					Namespace: "banana",
+					Annotations: ssv1alpha1.UpdateScopeAnnotations(
+						map[string]string{},
+						ssv1alpha1.StrictScope,
+					),
+				},
+			},
+			expectedArgs: []string{
+				"--scope", "strict",
+				"--name", "apple",
+				"--namespace", "banana",
+			},
+		},
+	} {
+		t.Run(td.subject, func(t *testing.T) {
+			c := gomock.NewController(t)
+			defer c.Finish()
+
+			fakeCmd := &fexec.FakeCmd{
+				CombinedOutputScript: []fexec.FakeAction{
+					func() ([]byte, []byte, error) {
+						err := &exec.ExitError{}
+						return []byte(""), []byte(`error: cannot fetch certificate: services "sealed-secrets-controller" not found`), err
+					},
+				},
+			}
+			args := append([]string{"--raw", "--from-file", "/dev/stdin"}, td.expectedArgs...)
+
+			mockExec := mock.NewMockInterface(c)
+			mockExec.
+				EXPECT().
+				Command("kubeseal", args).
+				Return(fakeCmd)
+
+			ks := kubeseal{exec: mockExec}
+			_, err := ks.EncryptRaw([]byte(""), td.secret)
+			assert.Error(t, err)
+		})
+	}
+}
+
+func TestEncryptRawFailArgs(t *testing.T) {
+	_ = assert.New(t)
+	for _, td := range []struct {
+		subject string
+		secret  *corev1.Secret
+		err     string
+	}{
+		{
+			subject: "StrictScope, namespace not given",
+			secret: &corev1.Secret{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "apple",
+					Annotations: ssv1alpha1.UpdateScopeAnnotations(
+						map[string]string{},
+						ssv1alpha1.StrictScope,
+					),
+				},
+			},
+			err: "namespace must be given",
+		},
+		{
+			subject: "StrictScope, name not given",
+			secret: &corev1.Secret{
+				ObjectMeta: metav1.ObjectMeta{
+					Namespace: "banana",
+					Annotations: ssv1alpha1.UpdateScopeAnnotations(
+						map[string]string{},
+						ssv1alpha1.StrictScope,
+					),
+				},
+			},
+			err: "name must be given",
+		},
+		{
+			subject: "NamespaceWideScope, namespace not given",
+			secret: &corev1.Secret{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "apple",
+					Annotations: ssv1alpha1.UpdateScopeAnnotations(
+						map[string]string{},
+						ssv1alpha1.NamespaceWideScope,
+					),
+				},
+			},
+			err: "namespace must be given",
+		},
+	} {
+		t.Run(td.subject, func(t *testing.T) {
+			c := gomock.NewController(t)
+			defer c.Finish()
+
+			mockExec := mock.NewMockInterface(c)
+			ks := kubeseal{exec: mockExec}
+			_, err := ks.EncryptRaw([]byte(""), td.secret)
+			if assert.Error(t, err) {
+				assert.Contains(t, err.Error(), td.err)
+			}
 		})
 	}
 }
