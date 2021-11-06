@@ -70,7 +70,7 @@ func (ks *kubeseal) Unseal(sealedSecret *ssv1alpha1.SealedSecret, sealingKeys *c
 	}
 	_, err = f.Write(sealingKeysJSON)
 	if err != nil {
-		return nil, fmt.Errorf("error writing SecretList to file: %v: %v", f, err)
+		return nil, fmt.Errorf("error writing kubernetes SecretList to file: %v: %v", f, err)
 	}
 	err = f.Close()
 	if err != nil {
@@ -113,7 +113,6 @@ func (ks *kubeseal) Unseal(sealedSecret *ssv1alpha1.SealedSecret, sealingKeys *c
 	secret.ObjectMeta.OwnerReferences = nil
 
 	return &secret, nil
-
 }
 
 func (ks *kubeseal) EncryptRaw(value []byte, secret *corev1.Secret) ([]byte, error) {
