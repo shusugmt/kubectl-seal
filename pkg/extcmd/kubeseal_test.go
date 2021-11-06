@@ -15,6 +15,51 @@ import (
 	fexec "k8s.io/utils/exec/testing"
 )
 
+func TestSealSuccess(t *testing.T) {
+	_ = assert.New(t)
+	c := gomock.NewController(t)
+	defer c.Finish()
+
+	fakeCmd := &fexec.FakeCmd{
+		CombinedOutputScript: []fexec.FakeAction{
+			func() ([]byte, []byte, error) {
+				return []byte(`{"kind":"SealedSecret","apiVersion":"v1alpha1","metadata":{"name":"orange"}}`), []byte(""), nil
+			},
+		},
+	}
+	args := []string{"--format", "json"}
+
+	mockExec := mock.NewMockInterface(c)
+	mockExec.
+		EXPECT().
+		Command("kubeseal", args).
+		Return(fakeCmd)
+
+	ks := kubeseal{exec: mockExec}
+	secret := &corev1.Secret{}
+	output, err := ks.Seal(secret)
+	if err != nil {
+		t.Errorf("test run failed: %v", err)
+	}
+	expectedOutput := &ssv1alpha1.SealedSecret{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "v1alpha1",
+			Kind:       "SealedSecret",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "orange",
+		},
+	}
+	assert.Equal(t, expectedOutput, output)
+
+	stdin, err := ioutil.ReadAll(fakeCmd.Stdin)
+	if err != nil {
+		t.Errorf("test run failed: %v", err)
+	}
+	expectedStdin, _ := json.Marshal(secret)
+	assert.Equal(t, expectedStdin, stdin)
+}
+
 func TestUnsealSuccess(t *testing.T) {
 	_ = assert.New(t)
 	c := gomock.NewController(t)

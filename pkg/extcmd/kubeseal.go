@@ -31,7 +31,28 @@ type kubeseal struct {
 }
 
 func (ks *kubeseal) Seal(secret *corev1.Secret) (*ssv1alpha1.SealedSecret, error) {
-	return nil, nil
+	args := []string{
+		"--format", "json",
+	}
+	execCmd := ks.exec.Command("kubeseal", args...)
+
+	secretJSON, err := json.Marshal(secret)
+	if err != nil {
+		return nil, fmt.Errorf("error marshalling kubernetes Secret to json: %v", err)
+	}
+	execCmd.SetStdin(bytes.NewReader(secretJSON))
+
+	sealedSecretJSON, err := execCmd.CombinedOutput()
+	if err != nil {
+		return nil, fmt.Errorf("error invoking kubeseal as %v: %v: %s", args, err, sealedSecretJSON)
+	}
+
+	// build struct
+	var sealedSecret ssv1alpha1.SealedSecret
+	if err := json.Unmarshal(sealedSecretJSON, &sealedSecret); err != nil {
+		return nil, fmt.Errorf("error unmarshalling json to SealedSecret: %v", err)
+	}
+	return &sealedSecret, nil
 }
 
 func (ks *kubeseal) Unseal(sealedSecret *ssv1alpha1.SealedSecret, sealingKeys *corev1.SecretList) (*corev1.Secret, error) {
